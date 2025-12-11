@@ -50,7 +50,7 @@ func ValidateInitRun(dir string, iacType string) error {
 }
 
 func GetFilePaths(dir string, iacType string) ([]string, error) {
-	if iacType == string(common.Terragrunt) {
+	if iacType == string(common.Terragrunt) || iacType == string(common.TerragruntRunAll) {
 		return getTerragruntFilePath(dir)
 	} else {
 		return getTerraformFilePaths(dir)
