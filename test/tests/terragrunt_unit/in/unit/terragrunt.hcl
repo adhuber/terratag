@@ -20,5 +20,5 @@ EOF
 
 
 terraform {
-  source = "tfr:///terraform-google-modules/gcloud/google?version=2.1.0"
+  source = "../terraform"
 }

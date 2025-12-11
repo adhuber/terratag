@@ -103,10 +103,11 @@ func TestTerragruntWithCache(t *testing.T) {
 
 	g := NewWithT(t)
 
-	entryDir := "./test/tests/terragrunt_with_cache"
+	entryDir := "./test/tests/terragrunt_unit"
 
 	in := entryDir + "/in"
 	out := entryDir + "/out"
+	unit := out + "/unit"
 
 	if err := os.RemoveAll(out); err != nil {
 		t.Fatalf("failed to remove out directory: %s %s", out, err.Error())
@@ -116,9 +117,9 @@ func TestTerragruntWithCache(t *testing.T) {
 		t.Fatalf("failed to in directory to out directory: %s", err.Error())
 	}
 
-	itShouldRunTerragruntInit(out, g)
-	itShouldRunTerratagTerragruntMode(out, g)
-	itShouldRunTerragruntValidate(out, g)
+	itShouldRunTerragruntInit(unit, g)
+	itShouldRunTerratagTerragruntMode(unit, g)
+	itShouldRunTerragruntValidate(unit, g)
 	itShouldGenerateExpectedTerragruntTerratagFiles(entryDir, g)
 }
 
@@ -129,10 +130,11 @@ func TestTerragruntRunAll(t *testing.T) {
 
 	g := NewWithT(t)
 
-	entryDir := "./test/tests/terragrunt_with_cache"
+	entryDir := "./test/tests/terragrunt_implicit_stack"
 
 	in := entryDir + "/in"
 	out := entryDir + "/out"
+	stack := out + "/stack"
 
 	if err := os.RemoveAll(out); err != nil {
 		t.Fatalf("failed to remove out directory: %s %s", out, err.Error())
@@ -142,9 +144,9 @@ func TestTerragruntRunAll(t *testing.T) {
 		t.Fatalf("failed to copy in directory to out directory: %s", err.Error())
 	}
 
-	itShouldRunTerragruntRunAllInit(out, g)
-	itShouldRunTerratagTerragruntRunAllMode(out, g)
-	itShouldRunTerragruntRunAllValidate(out, g)
+	itShouldRunTerragruntRunAllInit(stack, g)
+	itShouldRunTerratagTerragruntRunAllMode(stack, g)
+	itShouldRunTerragruntRunAllValidate(stack, g)
 	itShouldGenerateExpectedTerragruntTerratagFiles(entryDir, g)
 }
 
@@ -241,19 +243,25 @@ func itShouldGenerateExpectedTerragruntTerratagFiles(entryDir string, g *GomegaW
 	expectedPattern := entryDir + "/expected/**/*.tf"
 	expectedTerratag, _ := doublestar.Glob(expectedPattern)
 
-	actualTerratag, _ := doublestar.Glob(entryDir + "/out/**/.terragrunt-cache/**/*.tf")
-	actualTerratag = filterSymlink(actualTerratag)
+	cachePattern := entryDir + "/out/**/.terragrunt-cache"
+	cacheDirs, _ := doublestar.Glob(cachePattern)
 
-	hashmap := make(map[string]string)
+	for _, cacheDir := range cacheDirs {
+		hashmap := make(map[string]string)
 
-	for _, acctualTerratagFile := range actualTerratag {
-		hashmap[getFileSha256(acctualTerratagFile, g)] = acctualTerratagFile
-	}
+		actualTerratag, _ := doublestar.Glob(cacheDir + "/**/*.tf")
+		actualTerratag = filterSymlink(actualTerratag)
 
-	for _, expectedTerratagFile := range expectedTerratag {
-		hash := getFileSha256(expectedTerratagFile, g)
-		_, ok := hashmap[hash]
-		g.Expect(ok).To(BeTrue())
+		for _, actualFile := range actualTerratag {
+			hash := getFileSha256(actualFile, g)
+			hashmap[hash] = actualFile
+		}
+
+		for _, expectedTerratagFile := range expectedTerratag {
+			hash := getFileSha256(expectedTerratagFile, g)
+			_, ok := hashmap[hash]
+			g.Expect(ok).To(BeTrue(), "expected file "+expectedTerratagFile+" not found in cache directory "+cacheDir)
+		}
 	}
 }
 
