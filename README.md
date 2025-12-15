@@ -213,7 +213,13 @@ To use terratag with Terragrunt:
 - Use `-type=terragrunt` for a standard unit
 - Use `-type=terragrunt-run-all` for implicit stacks
 
-**Not supported:** Explicit stacks are not currently tested or supported.
+> Note: Explicit stacks are not explicitly supported.
+  If you are working with an explicit stack,
+  you may run terratag on each module individually by using `-type=terragrunt` and `-dir=<module_path>`.
+  If your generated stack is similar to an implicit stack,
+  you may use `-type=terragrunt-run-all` from the generated stack directory (`.terragrunt-stack` by default).
+  Remember to initialize the units in the stack by either running `terragrunt stack run init`,
+  or running `terragrunt init` in each unit beforehand.
 
 If issues arise with new Terragrunt versions, please open an issue.
 
