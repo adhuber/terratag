@@ -202,6 +202,21 @@ TERRATAG_KEEP_EXISTING_TAGS
   - `azurestack`
   - `azapi`
 
+### Usage with Terragrunt
+
+Terratag supports Terragrunt 0.78.0 and above.
+> Note: that Terragrunt hasn't released a stable 1.x version yet,
+  so compatibility with future releases isn't guaranteed.
+
+To use terratag with Terragrunt:
+
+- Use `-type=terragrunt` for a standard unit
+- Use `-type=terragrunt-run-all` for implicit stacks
+
+**Not supported:** Explicit stacks are not currently tested or supported.
+
+If issues arise with new Terragrunt versions, please open an issue.
+
 ## Develop
 
 Issues and Pull Requests are very welcome!
