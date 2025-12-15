@@ -205,7 +205,7 @@ TERRATAG_KEEP_EXISTING_TAGS
 ### Usage with Terragrunt
 
 Terratag supports Terragrunt 0.78.0 and above.
-> Note: that Terragrunt hasn't released a stable 1.x version yet,
+> Note: Terragrunt hasn't released a stable 1.x version yet,
   so compatibility with future releases isn't guaranteed.
 
 To use terratag with Terragrunt:
